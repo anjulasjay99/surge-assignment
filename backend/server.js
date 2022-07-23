@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const usersRouter = require("./routes/usersRouter");
+const notesRouter = require("./routes/notesRouter");
 
 const app = express();
 dotenv.config();
@@ -29,6 +30,7 @@ connection.once("open", () => {
 
 //routes
 app.use("/users", usersRouter);
+app.use("/notes", notesRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is up and running on port number ${PORT}`);
