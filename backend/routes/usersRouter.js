@@ -31,20 +31,20 @@ router.route("/login").post(async (req, res) => {
         const token = sign({ id: data.id, email: data.email });
 
         //send response
-        res.json({
+        res.status(200).json({
           status: "success",
           msg: "Success",
           user: data,
           token,
         });
       } else {
-        res.json({
+        res.status(400).json({
           status: "error",
           msg: "Incorrect email/ password",
         });
       }
     } else {
-      res.json({
+      res.status(400).json({
         status: "error",
         msg: "Incorrect email/ password",
       });
@@ -111,17 +111,17 @@ router.route("/").post(async (req, res) => {
           sendMail(email, password);
 
           //send response
-          res.json({ status: "success", msg: "User created" });
+          res.status(200).json({ status: "success", msg: "User created" });
         })
         .catch((err) => {
           console.log(err);
-          res.json({ status: "error", msg: err });
+          res.status(400).json({ status: "error", msg: err });
         });
     } else {
-      res.json({ status: "error", msg: "Authentication failed" });
+      res.status(400).json({ status: "error", msg: "Authentication failed" });
     }
   } else {
-    res.json({
+    res.status(400).json({
       status: "error",
       msg: "An account with the same email already exists",
     });
@@ -146,14 +146,16 @@ router.route("/").put(async (req, res) => {
     )
       .then((data) => {
         //send response
-        res.json({ status: "success", msg: "Updated successfully" });
+        res
+          .status(200)
+          .json({ status: "success", msg: "Updated successfully" });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ status: "error", msg: err }); //send response
+        res.status(400).json({ status: "error", msg: err }); //send response
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" }); //send response
+    res.status(400).json({ status: "error", msg: "Authentication failed" }); //send response
   }
 });
 
@@ -171,14 +173,16 @@ router.route("/:id").put(async (req, res) => {
     await User.findOneAndDelete({ id })
       .then((data) => {
         //send response
-        res.json({ status: "success", msg: "Deleted successfully" });
+        res
+          .status(200)
+          .json({ status: "success", msg: "Deleted successfully" });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ status: "error", msg: err }); //send response
+        res.status(400).json({ status: "error", msg: err }); //send response
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" }); //send response
+    res.status(400).json({ status: "error", msg: "Authentication failed" }); //send response
   }
 });
 
@@ -193,14 +197,16 @@ router.route("/").get(async (req, res) => {
     await User.find()
       .then((data) => {
         //send response
-        res.json({ status: "success", msg: "Fetched successfully", data });
+        res
+          .status(200)
+          .json({ status: "success", msg: "Fetched successfully", data });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ status: "error", msg: err }); //send response
+        res.status(400).json({ status: "error", msg: err }); //send response
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" }); //send response
+    res.status(400).json({ status: "error", msg: "Authentication failed" }); //send response
   }
 });
 

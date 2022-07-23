@@ -15,14 +15,16 @@ router.route("/:id").get(async (req, res) => {
     //get all notes created by the user
     await Note.find({ userId })
       .then((data) => {
-        res.json({ success: "success", msg: "Fetched successfully", data });
+        res
+          .status(200)
+          .json({ success: "success", msg: "Fetched successfully", data });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ success: "error", msg: err });
+        res.status(400).json({ success: "error", msg: err });
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" });
+    res.status(400).json({ status: "error", msg: "Authentication failed" });
   }
 });
 
@@ -47,14 +49,14 @@ router.route("/").post(async (req, res) => {
     await newNote
       .save()
       .then((data) => {
-        res.json({ success: "success", msg: "Added successfully" });
+        res.status(200).json({ success: "success", msg: "Added successfully" });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ success: "error", msg: err });
+        res.status(400).json({ success: "error", msg: err });
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" });
+    res.status(400).json({ status: "error", msg: "Authentication failed" });
   }
 });
 
@@ -71,14 +73,16 @@ router.route("/").put(async (req, res) => {
     //update selected note
     await Note.findByIdAndUpdate(id, { title, description })
       .then((data) => {
-        res.json({ success: "success", msg: "Updated successfully" });
+        res
+          .status(200)
+          .json({ success: "success", msg: "Updated successfully" });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ success: "error", msg: err });
+        res.status(400).json({ success: "error", msg: err });
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" });
+    res.status(400).json({ status: "error", msg: "Authentication failed" });
   }
 });
 
@@ -95,14 +99,16 @@ router.route("/:id").delete(async (req, res) => {
     //delete selected note
     await Note.findByIdAndDelete(id)
       .then((data) => {
-        res.json({ success: "success", msg: "Deleted successfully" });
+        res
+          .status(200)
+          .json({ success: "success", msg: "Deleted successfully" });
       })
       .catch((err) => {
         console.log(err); //log error
-        res.json({ success: "error", msg: err });
+        res.status(400).json({ success: "error", msg: err });
       });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" });
+    res.status(400).json({ status: "error", msg: "Authentication failed" });
   }
 });
 
