@@ -210,4 +210,31 @@ router.route("/").get(async (req, res) => {
   }
 });
 
+//route for retrieving a user by id
+router.route("/:id").get(async (req, res) => {
+  //get access token sent with the request
+  const token = req.header("x-access-token");
+
+  //authorize user
+  if (auth(token)) {
+    //read request params and get id
+    const id = req.params.id;
+
+    //get user
+    await User.findOne({ id })
+      .then((data) => {
+        //send response
+        res
+          .status(200)
+          .json({ status: "success", msg: "Fetched successfully", data });
+      })
+      .catch((err) => {
+        console.log(err); //log error
+        res.status(400).json({ status: "error", msg: err }); //send response
+      });
+  } else {
+    res.status(400).json({ status: "error", msg: "Authentication failed" }); //send response
+  }
+});
+
 module.exports = router;
