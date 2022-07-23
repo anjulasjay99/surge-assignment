@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Note = require("../models/Note");
-const { auth, sign } = require("../utils/auth");
+const { auth, sign } = require("../utils/authHandler");
 
 //route for fetching all notes created by a specific user
 router.route("/:id").get(async (req, res) => {

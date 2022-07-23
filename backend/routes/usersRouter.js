@@ -2,7 +2,20 @@ const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 let jwt = require("jsonwebtoken");
-const { auth, sign } = require("../utils/auth");
+const { auth, sign } = require("../utils/authHandler");
+const { sendMail } = require("../utils/emailHandler");
+
+//this function is used to check if an account already exists with a given email address
+const checkEmail = async (email) => {
+  let exists = false;
+  await User.exists({ email })
+    .then((status) => {
+      exists = status;
+    })
+    .catch((err) => console.log(err));
+
+  return exists;
+};
 
 //route for login
 router.route("/login").post(async (req, res) => {
@@ -49,58 +62,69 @@ router.route("/").post(async (req, res) => {
     //read request body
     const { email, password, accountType } = req.body;
 
-    let id = "";
-    let success = false;
-    //generating an unique user id
-    while (!success) {
-      //generate an id
-      id = Math.floor(Math.random() * 1000)
-        .toString()
-        .padStart(3, "0");
+    if (checkEmail(email)) {
+      let id = "";
+      let success = false;
+      //generating an unique user id
+      while (!success) {
+        //generate an id
+        id = Math.floor(Math.random() * 1000)
+          .toString()
+          .padStart(3, "0");
 
-      //check if generated id already exists
-      await User.exists({ id })
-        .then((status) => {
-          if (status) {
-            success = false;
-          } else {
-            success = true;
-          }
+        //check if generated id already exists
+        await User.exists({ id })
+          .then((status) => {
+            if (status) {
+              success = false;
+            } else {
+              success = true;
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+
+      //create password hash
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(password, salt);
+
+      //create new user object
+      const newUser = new User({
+        id,
+        firstName: "",
+        lastName: "",
+        email,
+        dateOfBirth: "",
+        mobile: 0,
+        status: false,
+        password: hash,
+        accountType,
+      });
+
+      //add new user to the database
+      await newUser
+        .save()
+        .then((data) => {
+          //send email to the user's email address
+          sendMail(email, password);
+
+          //send response
+          res.json({ status: "success", msg: "User created" });
         })
         .catch((err) => {
           console.log(err);
+          res.json({ status: "error", msg: err });
         });
+    } else {
+      res.json({ status: "error", msg: "Authentication failed" });
     }
-
-    //create password hash
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
-
-    //create new user object
-    const newUser = new User({
-      id,
-      firstName: "",
-      lastName: "",
-      email,
-      dateOfBirth: "",
-      mobile: 0,
-      status: true,
-      password: hash,
-      accountType,
-    });
-
-    //add new user to the database
-    await newUser
-      .save()
-      .then((data) => {
-        res.json({ status: "success", msg: "User created" });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.json({ status: "error", msg: err });
-      });
   } else {
-    res.json({ status: "error", msg: "Authentication failed" });
+    res.json({
+      status: "error",
+      msg: "An account with the same email already exists",
+    });
   }
 });
 
