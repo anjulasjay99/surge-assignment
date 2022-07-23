@@ -23,33 +23,51 @@ router.route("/login").post(async (req, res) => {
   const { email, password } = req.body;
 
   //find user by email
-  await User.findOne({ email }).then((data) => {
-    if (data) {
-      //check password
-      if (bcrypt.compareSync(password, data.password)) {
-        //create a json web token
-        const token = sign({ id: data.id, email: data.email });
+  await User.findOne({ email })
+    .then((data) => {
+      if (data) {
+        //check password
+        if (bcrypt.compareSync(password, data.password)) {
+          //create a json web token
+          const token = sign({ id: data.id, email: data.email });
 
-        //send response
-        res.status(200).json({
-          status: "success",
-          msg: "Success",
-          user: data,
-          token,
-        });
+          //send response
+          res.status(200).json({
+            status: "success",
+            msg: "Success",
+            user: {
+              id: data.id,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              email: data.email,
+              dateOfBirth: data.dateOfBirth,
+              mobile: data.mobile,
+              password,
+              status: data.status,
+              accountType: data.accountType,
+            },
+            token,
+          });
+        } else {
+          res.status(400).json({
+            status: "error",
+            msg: "Incorrect email/ password.",
+          });
+        }
       } else {
         res.status(400).json({
           status: "error",
-          msg: "Incorrect email/ password",
+          msg: "Incorrect email/ password.",
         });
       }
-    } else {
+    })
+    .catch((err) => {
+      console.log(err);
       res.status(400).json({
         status: "error",
-        msg: "Incorrect email/ password",
+        msg: "An unexpected error occured.",
       });
-    }
-  });
+    });
 });
 
 //route for creating a new user
@@ -139,10 +157,22 @@ router.route("/").put(async (req, res) => {
     const { id, firstName, lastName, email, dateOfBirth, mobile, password } =
       req.body;
 
+    //create password hash
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
     //update user
     await User.findOneAndUpdate(
       { id },
-      { firstName, lastName, email, dateOfBirth, mobile, password }
+      {
+        firstName,
+        lastName,
+        email,
+        dateOfBirth,
+        mobile,
+        password: hash,
+        status: true,
+      }
     )
       .then((data) => {
         //send response

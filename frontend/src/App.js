@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
+import UpdateInfo from "./components/UpdateInfo";
+import ChangePassowrd from "./components/ChangePassowrd";
 
 function App() {
+  const [user, setuser] = useState(null);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<Login setUser={setuser} />} />
+        <Route path="/login" element={<Login setUser={setuser} />} />
+        <Route path="/update-info" element={<UpdateInfo user={user} />} />
+        <Route
+          path="/change-password"
+          element={<ChangePassowrd user={user} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
