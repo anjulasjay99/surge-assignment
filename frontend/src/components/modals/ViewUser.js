@@ -50,7 +50,7 @@ function ViewUser({ isOpen, toggle, user }) {
         <br />
         <Label>
           <strong>Has Logged In :&nbsp;</strong>
-          {user.status ? "True" : "False"}
+          {user.status ? "Yes" : "No"}
         </Label>
       </ModalBody>
       <ModalFooter>

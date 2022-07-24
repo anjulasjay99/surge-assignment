@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Input, Button, Table } from "reactstrap";
+import {
+  Input,
+  Button,
+  Table,
+  PaginationItem,
+  PaginationLink,
+  Pagination,
+} from "reactstrap";
 import { FaPlus } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import styles from "../styles/common.module.css";
@@ -15,6 +22,20 @@ function Users({ user, setUser }) {
   const [loggedUser, setloggedUser] = useState("");
   const [selectedUser, setselectedUser] = useState({});
   const [users, setusers] = useState([]);
+  const [stext, setstext] = useState("");
+  const [pages, setpages] = useState([]);
+  const [curPage, setcurPage] = useState(0);
+
+  //search
+  const search = (keyword) => {
+    if (keyword !== "") {
+      setstext(keyword);
+      getUsers(keyword, 5, 0);
+    } else {
+      setstext("");
+      getUsers("", 5, 0);
+    }
+  };
 
   //open/ close new user modal
   const newUserToggle = () => setnewUserModal(!newUserModal);
@@ -39,15 +60,24 @@ function Users({ user, setUser }) {
   };
 
   //fetch all users
-  const getUsers = async () => {
+  const getUsers = async (keyword, limit, page) => {
     const token = sessionStorage.getItem("token");
     await axios
-      .get("http://localhost:8070/users", {
-        headers: { "x-access-token": token },
-      })
+      .get(
+        `http://localhost:8070/users?keyword=${keyword}&limit=${limit}&page=${page}`,
+        {
+          headers: { "x-access-token": token },
+        }
+      )
       .then((res) => {
         setusers(res.data.data);
-        setselectedUser(res.data.data[0]);
+        const plength = res.data.pages;
+        let pArr = [];
+        for (let i = 0; i < plength; i++) {
+          pArr.push(i + 1);
+        }
+        setpages(pArr);
+        setcurPage(page);
       })
       .catch((err) => {
         alert("Error when fetching data.");
@@ -58,7 +88,7 @@ function Users({ user, setUser }) {
     if (user) {
       if (user.accountType === "admin") {
         setloggedUser(user);
-        getUsers();
+        getUsers("", 5, 0);
       } else {
         alert("You do not have permission to access this page.");
         navigate("/login");
@@ -79,6 +109,15 @@ function Users({ user, setUser }) {
         <h1>Users</h1>
       </div>
       <div className={styles.contentHeader}>
+        <Input
+          id="search"
+          name="search"
+          className={styles.searchInput}
+          placeholder="Search by name, email"
+          type="text"
+          value={stext}
+          onChange={(e) => search(e.target.value)}
+        />
         <Button
           color="primary"
           className={styles.btnCreate}
@@ -89,7 +128,7 @@ function Users({ user, setUser }) {
         </Button>
       </div>
       <div className={styles.content}>
-        <Table bordered hover striped>
+        <Table bordered striped>
           <thead>
             <tr>
               <th>#</th>
@@ -107,7 +146,7 @@ function Users({ user, setUser }) {
             {users.map((user, index) => {
               return (
                 <tr key={user.id}>
-                  <th scope="row">{index + 1}</th>
+                  <th scope="row">{curPage * 5 + (index + 1)}</th>
                   <td>{user.id}</td>
                   <td>{user.firstName}</td>
                   <td>{user.lastName}</td>
@@ -127,6 +166,36 @@ function Users({ user, setUser }) {
             })}
           </tbody>
         </Table>
+      </div>
+      <div>
+        <Pagination>
+          <PaginationItem>
+            <PaginationLink first onClick={() => getUsers("", 5, 0)} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => getUsers("", 5, curPage - 1)}
+              previous
+            />
+          </PaginationItem>
+          {pages.map((p) => {
+            return (
+              <PaginationLink onClick={() => getUsers("", 5, p - 1)}>
+                {p}
+              </PaginationLink>
+            );
+          })}
+
+          <PaginationItem>
+            <PaginationLink onClick={() => getUsers("", 5, curPage + 1)} next />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => getUsers("", 5, pages.length - 1)}
+              last
+            />
+          </PaginationItem>
+        </Pagination>
       </div>
       <NewUserModal
         isOpen={newUserModal}

@@ -12,10 +12,6 @@ function App() {
 
   useEffect(() => {
     const usr = sessionStorage.getItem("user");
-    if (usr) {
-      setuser(usr);
-      console.log(usr);
-    }
   }, []);
 
   return (

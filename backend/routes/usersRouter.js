@@ -17,6 +17,16 @@ const checkEmail = async (email) => {
   return exists;
 };
 
+//this function is used to count total number of pages that can be displayed on the frontend
+const getTotalPages = async (limit) => {
+  let pages = 0;
+  await User.count().then((res) => {
+    pages = Math.ceil(res / limit);
+  });
+
+  return pages;
+};
+
 //route for login
 router.route("/login").post(async (req, res) => {
   //read request body
@@ -223,40 +233,31 @@ router.route("/").get(async (req, res) => {
 
   //authorize user
   if (auth(token)) {
+    const limit = req.query.limit;
+    const page = req.query.page;
+    const keyword = req.query.keyword || "";
+
     //get all user
-    await User.find()
-      .then((data) => {
+    await User.find({
+      $or: [
+        { email: { $regex: keyword, $options: "i" } },
+        { firstName: { $regex: keyword, $options: "i" } },
+        { lastName: { $regex: keyword, $options: "i" } },
+      ],
+    })
+      .limit(limit)
+      .skip(limit * page)
+      .then(async (data) => {
+        const pages = await getTotalPages(limit);
         //send response
         res
           .status(200)
-          .json({ status: "success", msg: "Fetched successfully", data });
-      })
-      .catch((err) => {
-        console.log(err); //log error
-        res.status(400).json({ status: "error", msg: err }); //send response
-      });
-  } else {
-    res.status(400).json({ status: "error", msg: "Authentication failed" }); //send response
-  }
-});
-
-//route for retrieving a user by id
-router.route("/:id").get(async (req, res) => {
-  //get access token sent with the request
-  const token = req.header("x-access-token");
-
-  //authorize user
-  if (auth(token)) {
-    //read request params and get id
-    const id = req.params.id;
-
-    //get user
-    await User.findOne({ id })
-      .then((data) => {
-        //send response
-        res
-          .status(200)
-          .json({ status: "success", msg: "Fetched successfully", data });
+          .json({
+            status: "success",
+            msg: "Fetched successfully",
+            pages,
+            data,
+          });
       })
       .catch((err) => {
         console.log(err); //log error

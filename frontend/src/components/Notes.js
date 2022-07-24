@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Input, Button, Table } from "reactstrap";
+import {
+  Input,
+  Button,
+  Table,
+  PaginationItem,
+  PaginationLink,
+  Pagination,
+} from "reactstrap";
 import { FaPlus } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import { MdDeleteForever } from "react-icons/md";
@@ -21,6 +28,8 @@ function Notes({ setUser, user }) {
   const [editNote, seteditNote] = useState(false);
   const [notes, setnotes] = useState([]);
   const [selectedNote, setselectedNote] = useState({});
+  const [pages, setpages] = useState([]);
+  const [curPage, setcurPage] = useState(0);
 
   //toggle view note modal
   const toggleViewNote = () => {
@@ -71,7 +80,7 @@ function Notes({ setUser, user }) {
         })
         .then((res) => {
           alert("Deleted successfully");
-          getNotes(user.id);
+          getNotes(user.id, 5, 0);
         })
         .catch((err) => {
           alert("Error");
@@ -80,16 +89,23 @@ function Notes({ setUser, user }) {
   };
 
   //get all notes created by user
-  const getNotes = async (id) => {
+  const getNotes = async (id, limit, page) => {
     const token = sessionStorage.getItem("token");
     await axios
-      .get(`http://localhost:8070/notes/${id}`, {
+      .get(`http://localhost:8070/notes/${id}?limit=${limit}&page=${page}`, {
         headers: {
           "x-access-token": token,
         },
       })
       .then((res) => {
         setnotes(res.data.data);
+        const plength = res.data.pages;
+        let pArr = [];
+        for (let i = 0; i < plength; i++) {
+          pArr.push(i + 1);
+        }
+        setpages(pArr);
+        setcurPage(page);
       })
       .catch((err) => {
         alert("Error fecthing data");
@@ -100,7 +116,7 @@ function Notes({ setUser, user }) {
     if (user) {
       if (user.accountType === "student") {
         setloggedUser(user);
-        getNotes(user.id);
+        getNotes(user.id, 5, 0);
       } else {
         alert("You do not have permission to access this page.");
         navigate("/login");
@@ -143,7 +159,7 @@ function Notes({ setUser, user }) {
             {notes.map((note, index) => {
               return (
                 <tr key={note._id}>
-                  <th scope="row">{index + 1}</th>
+                  <th scope="row">{curPage * 5 + (index + 1)}</th>
                   <td>{note.title}</td>
                   <td>{new Date(note.dateCreated).toLocaleString()}</td>
                   <td>
@@ -170,6 +186,39 @@ function Notes({ setUser, user }) {
             })}
           </tbody>
         </Table>
+      </div>
+      <div>
+        <Pagination>
+          <PaginationItem>
+            <PaginationLink first onClick={() => getNotes(user.id, 5, 0)} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => getNotes(user.id, 5, curPage - 1)}
+              previous
+            />
+          </PaginationItem>
+          {pages.map((p) => {
+            return (
+              <PaginationLink onClick={() => getNotes(user.id, 5, p - 1)}>
+                {p}
+              </PaginationLink>
+            );
+          })}
+
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => getNotes(user.id, 5, curPage + 1)}
+              next
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => getNotes(user.id, 5, pages.length - 1)}
+              last
+            />
+          </PaginationItem>
+        </Pagination>
       </div>
       <ViewNote isOpen={viewNote} toggle={toggleViewNote} note={selectedNote} />
       <CreateNote

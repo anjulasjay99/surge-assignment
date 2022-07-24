@@ -2,6 +2,16 @@ const router = require("express").Router();
 const Note = require("../models/Note");
 const { auth, sign } = require("../utils/authHandler");
 
+//this function is used to count total number of pages that can be displayed on the frontend
+const getTotalPages = async (limit) => {
+  let pages = 0;
+  await Note.count().then((res) => {
+    pages = Math.ceil(res / limit);
+  });
+
+  return pages;
+};
+
 //route for fetching all notes created by a specific user
 router.route("/:id").get(async (req, res) => {
   //get access token sent with the request
@@ -11,13 +21,21 @@ router.route("/:id").get(async (req, res) => {
   if (auth(token)) {
     //get request param
     const userId = req.params.id;
+    const limit = req.query.limit;
+    const page = req.query.page;
 
     //get all notes created by the user
     await Note.find({ userId })
-      .then((data) => {
-        res
-          .status(200)
-          .json({ success: "success", msg: "Fetched successfully", data });
+      .limit(limit)
+      .skip(limit * page)
+      .then(async (data) => {
+        const pages = await getTotalPages(limit);
+        res.status(200).json({
+          success: "success",
+          msg: "Fetched successfully",
+          pages,
+          data,
+        });
       })
       .catch((err) => {
         console.log(err); //log error

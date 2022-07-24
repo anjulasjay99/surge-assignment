@@ -36,7 +36,7 @@ function NewUserModal({ isOpen, toggle, getUsers }) {
           .then((res) => {
             alert(res.data.msg);
             setloading(false);
-            getUsers();
+            getUsers("", 5, 0);
             toggle();
           })
           .catch((err) => {

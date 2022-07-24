@@ -38,7 +38,7 @@ function CreateNote({ isOpen, toggle, userId, getNotes }) {
           setloading(false);
           settitle("");
           setdescription("");
-          getNotes(userId);
+          getNotes(userId, 5, 0);
           toggle();
         })
         .catch((err) => {

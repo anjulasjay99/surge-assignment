@@ -30,6 +30,7 @@ Button {
 
 .content {
   width: 100%;
+  min-height: 270px;
 }
 
 .contentHeader {
@@ -59,4 +60,9 @@ Button {
 
 .header {
   width: 100%;
+}
+
+.searchInput {
+  width: 300px;
+  float: left;
 }
