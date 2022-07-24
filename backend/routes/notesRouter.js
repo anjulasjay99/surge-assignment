@@ -38,11 +38,14 @@ router.route("/").post(async (req, res) => {
     //get request body
     const { userId, title, description } = req.body;
 
+    const dateCreated = new Date().toUTCString();
+
     //create new note ibject
     const newNote = new Note({
       userId,
       title,
       description,
+      dateCreated,
     });
 
     //add new note to the database

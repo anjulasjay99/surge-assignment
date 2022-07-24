@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import UpdateInfo from "./components/UpdateInfo";
 import ChangePassowrd from "./components/ChangePassowrd";
 import Users from "./components/Users";
+import Notes from "./components/Notes";
 
 function App() {
   const [user, setuser] = useState(null);
@@ -30,6 +31,10 @@ function App() {
         <Route
           path="/users"
           element={<Users user={user} setUser={setuser} />}
+        />
+        <Route
+          path="/notes"
+          element={<Notes user={user} setUser={setuser} />}
         />
       </Routes>
     </BrowserRouter>

@@ -51,7 +51,7 @@ function Login({ setUser }) {
             if (res.data.user.accountType === "admin") {
               navigate("/users");
             } else {
-              alert("student?");
+              navigate("/notes");
             }
           }
         })
