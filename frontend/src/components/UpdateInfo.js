@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, FormGroup, Input, Button } from "reactstrap";
 import styles from "../styles/common.module.css";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function UpdateInfo() {

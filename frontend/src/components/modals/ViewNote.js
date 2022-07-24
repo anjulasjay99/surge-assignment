@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Modal,
@@ -7,7 +7,6 @@ import {
   ModalFooter,
   Label,
 } from "reactstrap";
-import styles from "../../styles/common.module.css";
 
 function ViewNote({ note, isOpen, toggle }) {
   return (

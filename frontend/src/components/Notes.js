@@ -13,8 +13,6 @@ import { MdDeleteForever } from "react-icons/md";
 import styles from "../styles/common.module.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import NewUserModal from "./modals/NewUserModal";
-import ViewUser from "./modals/ViewUser";
 import ViewNote from "./modals/ViewNote";
 import CreateNote from "./modals/CreateNote";
 import { FaUserEdit } from "react-icons/fa";
