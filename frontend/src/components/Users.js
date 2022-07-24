@@ -28,13 +28,8 @@ function Users() {
 
   //search
   const search = (keyword) => {
-    if (keyword !== "") {
-      setstext(keyword);
-      getUsers(keyword, 5, 0);
-    } else {
-      setstext("");
-      getUsers("", 5, 0);
-    }
+    setstext(keyword);
+    getUsers(keyword, 5, 0);
   };
 
   //open/ close new user modal
@@ -58,31 +53,43 @@ function Users() {
     navigate("/login");
   };
 
+  //move to next page
+  const next = (page) => {
+    if (page >= 0 && page < pages.length) {
+      getUsers(stext, 5, page);
+    }
+  };
+
+  //move to next page
+  const prev = (page) => {
+    if (page >= 0 && page < pages.length) {
+      getUsers(stext, 5, page);
+    }
+  };
+
   //fetch all users
   const getUsers = async (keyword, limit, page) => {
-    if (page >= 0 && page < pages.length) {
-      const token = sessionStorage.getItem("token");
-      await axios
-        .get(
-          `http://localhost:8070/users?keyword=${keyword}&limit=${limit}&page=${page}`,
-          {
-            headers: { "x-access-token": token },
-          }
-        )
-        .then((res) => {
-          setusers(res.data.data);
-          const plength = res.data.pages;
-          let pArr = [];
-          for (let i = 0; i < plength; i++) {
-            pArr.push(i + 1);
-          }
-          setpages(pArr);
-          setcurPage(page);
-        })
-        .catch((err) => {
-          alert("Error when fetching data.");
-        });
-    }
+    const token = sessionStorage.getItem("token");
+    await axios
+      .get(
+        `http://localhost:8070/users?keyword=${keyword}&limit=${limit}&page=${page}`,
+        {
+          headers: { "x-access-token": token },
+        }
+      )
+      .then((res) => {
+        setusers(res.data.data);
+        const plength = res.data.pages;
+        let pArr = [];
+        for (let i = 0; i < plength; i++) {
+          pArr.push(i + 1);
+        }
+        setpages(pArr);
+        setcurPage(page);
+      })
+      .catch((err) => {
+        alert("Error when fetching data.");
+      });
   };
 
   useEffect(() => {
@@ -115,7 +122,7 @@ function Users() {
           id="search"
           name="search"
           className={styles.searchInput}
-          placeholder="Search by name, email"
+          placeholder="Search by id, name or email"
           type="text"
           value={stext}
           onChange={(e) => search(e.target.value)}
@@ -172,28 +179,25 @@ function Users() {
       <div>
         <Pagination>
           <PaginationItem>
-            <PaginationLink first onClick={() => getUsers("", 5, 0)} />
+            <PaginationLink first onClick={() => getUsers(stext, 5, 0)} />
           </PaginationItem>
           <PaginationItem>
-            <PaginationLink
-              onClick={() => getUsers("", 5, curPage - 1)}
-              previous
-            />
+            <PaginationLink onClick={() => prev(curPage - 1)} previous />
           </PaginationItem>
           {pages.map((p) => {
             return (
-              <PaginationLink onClick={() => getUsers("", 5, p - 1)}>
+              <PaginationLink onClick={() => getUsers(stext, 5, p - 1)}>
                 {p}
               </PaginationLink>
             );
           })}
 
           <PaginationItem>
-            <PaginationLink onClick={() => getUsers("", 5, curPage + 1)} next />
+            <PaginationLink onClick={() => next(curPage + 1)} next />
           </PaginationItem>
           <PaginationItem>
             <PaginationLink
-              onClick={() => getUsers("", 5, pages.length - 1)}
+              onClick={() => getUsers(stext, 5, pages.length - 1)}
               last
             />
           </PaginationItem>

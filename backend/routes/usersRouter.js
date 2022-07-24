@@ -20,14 +20,27 @@ const checkEmail = async (email) => {
 //this function is used to count total number of pages that can be displayed on the frontend
 const getTotalPages = async (limit, keyword) => {
   let pages = 0;
-  await User.count({
-    $or: [
-      { email: { $regex: keyword, $options: "i" } },
-      { firstName: { $regex: keyword, $options: "i" } },
-      { lastName: { $regex: keyword, $options: "i" } },
-    ],
-  }).then((res) => {
-    pages = Math.ceil(res / limit);
+  await User.aggregate([
+    { $addFields: { idStr: { $toString: "$id" } } },
+    {
+      $match: {
+        $or: [
+          { idStr: { $regex: keyword, $options: "i" } },
+          { email: { $regex: keyword, $options: "i" } },
+          { firstName: { $regex: keyword, $options: "i" } },
+          { lastName: { $regex: keyword, $options: "i" } },
+        ],
+      },
+    },
+    {
+      $count: "total",
+    },
+  ]).then((res) => {
+    if (res.length > 0) {
+      pages = Math.ceil(res[0].total / limit);
+    } else {
+      pages = 0;
+    }
   });
 
   return pages;
@@ -239,22 +252,29 @@ router.route("/").get(async (req, res) => {
 
   //authorize user
   if (auth(token)) {
-    const limit = req.query.limit;
-    const page = req.query.page;
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
     const keyword = req.query.keyword;
 
     //check if all required query parameters are there
     if (limit !== undefined && page !== undefined && keyword !== undefined) {
       //get all user
-      await User.find({
-        $or: [
-          { email: { $regex: keyword, $options: "i" } },
-          { firstName: { $regex: keyword, $options: "i" } },
-          { lastName: { $regex: keyword, $options: "i" } },
-        ],
-      })
-        .limit(limit)
+      await User.aggregate([
+        { $addFields: { idStr: { $toString: "$id" } } },
+        {
+          $match: {
+            $or: [
+              { idStr: { $regex: keyword, $options: "i" } },
+              { email: { $regex: keyword, $options: "i" } },
+              { firstName: { $regex: keyword, $options: "i" } },
+              { lastName: { $regex: keyword, $options: "i" } },
+            ],
+          },
+        },
+      ])
         .skip(limit * page)
+        .limit(limit)
+
         .then(async (data) => {
           const pages = await getTotalPages(limit, keyword);
           //send response
