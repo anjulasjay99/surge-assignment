@@ -38,7 +38,7 @@ function EditNote({ note, isOpen, toggle, getNotes, userId }) {
           setloading(false);
           settitle("");
           setdescription("");
-          getNotes(userId, 5, 0);
+          getNotes(userId, "", 5, 0);
           toggle();
         })
         .catch((err) => {

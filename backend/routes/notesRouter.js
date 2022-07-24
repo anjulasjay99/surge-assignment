@@ -3,10 +3,27 @@ const Note = require("../models/Note");
 const { auth, sign } = require("../utils/authHandler");
 
 //this function is used to count total number of pages that can be displayed on the frontend
-const getTotalPages = async (limit, userId) => {
+const getTotalPages = async (limit, userId, title) => {
   let pages = 0;
-  await Note.count({ userId }).then((res) => {
-    pages = Math.ceil(res / limit);
+  await Note.aggregate([
+    { $addFields: { idStr: { $toString: "$userId" } } },
+    {
+      $match: {
+        idStr: userId,
+      },
+    },
+    {
+      $match: { title: { $regex: title, $options: "i" } },
+    },
+    {
+      $count: "total",
+    },
+  ]).then((res) => {
+    if (res.length > 0) {
+      pages = Math.ceil(res[0].total / limit);
+    } else {
+      pages = 0;
+    }
   });
 
   return pages;
@@ -21,17 +38,28 @@ router.route("/:id").get(async (req, res) => {
   if (auth(token)) {
     //get request param
     const userId = req.params.id;
-    const limit = req.query.limit;
-    const page = req.query.page;
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
+    const title = req.query.title;
 
     //check if all required query parameters are there
-    if (limit !== undefined && page !== undefined) {
+    if (limit !== undefined && page !== undefined && title !== undefined) {
       //get all notes created by the user
-      await Note.find({ userId })
-        .limit(limit)
+      await Note.aggregate([
+        { $addFields: { idStr: { $toString: "$userId" } } },
+        {
+          $match: {
+            idStr: userId,
+          },
+        },
+        {
+          $match: { title: { $regex: title, $options: "i" } },
+        },
+      ])
         .skip(limit * page)
+        .limit(limit)
         .then(async (data) => {
-          const pages = await getTotalPages(limit, userId);
+          const pages = await getTotalPages(limit, userId, title);
           res.status(200).json({
             success: "success",
             msg: "Fetched successfully",

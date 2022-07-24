@@ -30,6 +30,7 @@ function Notes() {
   const [selectedNote, setselectedNote] = useState({});
   const [pages, setpages] = useState([]);
   const [curPage, setcurPage] = useState(0);
+  const [stext, setstext] = useState("");
 
   //toggle view note modal
   const toggleViewNote = () => {
@@ -65,6 +66,26 @@ function Notes() {
     navigate("/login");
   };
 
+  //search
+  const search = (keyword) => {
+    setstext(keyword);
+    getNotes(user.id, keyword, 5, 0);
+  };
+
+  //move to next page
+  const next = (page) => {
+    if (page >= 0 && page < pages.length) {
+      getNotes(user.id, stext, 5, page);
+    }
+  };
+
+  //move to next page
+  const prev = (page) => {
+    if (page >= 0 && page < pages.length) {
+      getNotes(user.id, stext, 5, page);
+    }
+  };
+
   //delete note
   const deleteNote = async (note) => {
     if (
@@ -79,7 +100,7 @@ function Notes() {
         })
         .then((res) => {
           alert("Deleted successfully");
-          getNotes(user.id, 5, 0);
+          getNotes(user.id, "", 5, 0);
         })
         .catch((err) => {
           alert("Error");
@@ -88,14 +109,17 @@ function Notes() {
   };
 
   //get all notes created by user
-  const getNotes = async (id, limit, page) => {
+  const getNotes = async (id, title, limit, page) => {
     const token = sessionStorage.getItem("token");
     await axios
-      .get(`http://localhost:8070/notes/${id}?limit=${limit}&page=${page}`, {
-        headers: {
-          "x-access-token": token,
-        },
-      })
+      .get(
+        `http://localhost:8070/notes/${id}?title=${title}&limit=${limit}&page=${page}`,
+        {
+          headers: {
+            "x-access-token": token,
+          },
+        }
+      )
       .then((res) => {
         setnotes(res.data.data);
         const plength = res.data.pages;
@@ -116,7 +140,7 @@ function Notes() {
     if (!(usr === "" || usr === undefined || usr == null)) {
       if (usr.accountType === "student") {
         setuser(usr);
-        getNotes(usr.id, 5, 0);
+        getNotes(usr.id, "", 5, 0);
       } else {
         alert("You do not have permission to access this page.");
         navigate("/login");
@@ -136,6 +160,15 @@ function Notes() {
         <h1>Notes</h1>
       </div>
       <div className={styles.contentHeader}>
+        <Input
+          id="search"
+          name="search"
+          className={styles.searchInput}
+          placeholder="Search by title"
+          type="text"
+          value={stext}
+          onChange={(e) => search(e.target.value)}
+        />
         <Button
           color="primary"
           className={styles.btnCreate}
@@ -190,31 +223,30 @@ function Notes() {
       <div>
         <Pagination>
           <PaginationItem>
-            <PaginationLink first onClick={() => getNotes(user.id, 5, 0)} />
+            <PaginationLink
+              first
+              onClick={() => getNotes(user.id, stext, 5, 0)}
+            />
           </PaginationItem>
           <PaginationItem>
-            <PaginationLink
-              onClick={() => getNotes(user.id, 5, curPage - 1)}
-              previous
-            />
+            <PaginationLink onClick={() => prev(curPage - 1)} previous />
           </PaginationItem>
           {pages.map((p) => {
             return (
-              <PaginationLink onClick={() => getNotes(user.id, 5, p - 1)}>
+              <PaginationLink
+                onClick={() => getNotes(user.id, stext, 5, p - 1)}
+              >
                 {p}
               </PaginationLink>
             );
           })}
 
           <PaginationItem>
-            <PaginationLink
-              onClick={() => getNotes(user.id, 5, curPage + 1)}
-              next
-            />
+            <PaginationLink onClick={() => next(curPage + 1)} next />
           </PaginationItem>
           <PaginationItem>
             <PaginationLink
-              onClick={() => getNotes(user.id, 5, pages.length - 1)}
+              onClick={() => getNotes(user.id, stext, 5, pages.length - 1)}
               last
             />
           </PaginationItem>
