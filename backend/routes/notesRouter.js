@@ -3,9 +3,9 @@ const Note = require("../models/Note");
 const { auth, sign } = require("../utils/authHandler");
 
 //this function is used to count total number of pages that can be displayed on the frontend
-const getTotalPages = async (limit) => {
+const getTotalPages = async (limit, userId) => {
   let pages = 0;
-  await Note.count().then((res) => {
+  await Note.count({ userId }).then((res) => {
     pages = Math.ceil(res / limit);
   });
 
@@ -24,23 +24,28 @@ router.route("/:id").get(async (req, res) => {
     const limit = req.query.limit;
     const page = req.query.page;
 
-    //get all notes created by the user
-    await Note.find({ userId })
-      .limit(limit)
-      .skip(limit * page)
-      .then(async (data) => {
-        const pages = await getTotalPages(limit);
-        res.status(200).json({
-          success: "success",
-          msg: "Fetched successfully",
-          pages,
-          data,
+    //check if all required query parameters are there
+    if (limit !== undefined && page !== undefined) {
+      //get all notes created by the user
+      await Note.find({ userId })
+        .limit(limit)
+        .skip(limit * page)
+        .then(async (data) => {
+          const pages = await getTotalPages(limit, userId);
+          res.status(200).json({
+            success: "success",
+            msg: "Fetched successfully",
+            pages,
+            data,
+          });
+        })
+        .catch((err) => {
+          console.log(err); //log error
+          res.status(400).json({ success: "error", msg: err });
         });
-      })
-      .catch((err) => {
-        console.log(err); //log error
-        res.status(400).json({ success: "error", msg: err });
-      });
+    } else {
+      res.status(400).json({ status: "error", msg: "Missing parameters" }); //send response
+    }
   } else {
     res.status(400).json({ status: "error", msg: "Authentication failed" });
   }

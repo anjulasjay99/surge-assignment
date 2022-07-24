@@ -11,7 +11,7 @@ import styles from "../styles/common.module.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Login({ setUser }) {
+function Login() {
   const navigate = useNavigate();
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
@@ -38,10 +38,9 @@ function Login({ setUser }) {
           seterror(false);
           setfeedback("");
 
-          //set user and json web token sent from backend
-          setUser(res.data.user);
+          //save token and user in session storage
           sessionStorage.setItem("token", res.data.token);
-          sessionStorage.setItem("user", res.data.user);
+          sessionStorage.setItem("user", JSON.stringify(res.data.user));
 
           //check if user logged for the first time
           if (res.data.user.status === false) {
@@ -69,7 +68,7 @@ function Login({ setUser }) {
   };
 
   useEffect(() => {
-    setUser(null);
+    sessionStorage.removeItem("user");
     sessionStorage.removeItem("token");
   }, []);
 

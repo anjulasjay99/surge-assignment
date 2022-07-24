@@ -64,7 +64,8 @@ function ChangePassowrd({ user }) {
   useEffect(() => {
     if (location.state) {
       if (location.state.data) {
-        if (user) {
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (!(user === "" || user === undefined || user == null)) {
           setdata(location.state.data); //get user details sent from update info component
           setpassword(user.password); //get user's password
           settoken(sessionStorage.getItem("token")); //get the json web token stored in session storage

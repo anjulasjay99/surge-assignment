@@ -15,7 +15,7 @@ import axios from "axios";
 import NewUserModal from "./modals/NewUserModal";
 import ViewUser from "./modals/ViewUser";
 
-function Users({ user, setUser }) {
+function Users() {
   const navigate = useNavigate();
   const [newUserModal, setnewUserModal] = useState(false);
   const [viewUserModal, setviewUserModal] = useState(false);
@@ -23,7 +23,7 @@ function Users({ user, setUser }) {
   const [selectedUser, setselectedUser] = useState({});
   const [users, setusers] = useState([]);
   const [stext, setstext] = useState("");
-  const [pages, setpages] = useState([]);
+  const [pages, setpages] = useState([0]);
   const [curPage, setcurPage] = useState(0);
 
   //search
@@ -53,7 +53,6 @@ function Users({ user, setUser }) {
 
   //logout from account
   const logout = () => {
-    setUser(null);
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     navigate("/login");
@@ -61,31 +60,34 @@ function Users({ user, setUser }) {
 
   //fetch all users
   const getUsers = async (keyword, limit, page) => {
-    const token = sessionStorage.getItem("token");
-    await axios
-      .get(
-        `http://localhost:8070/users?keyword=${keyword}&limit=${limit}&page=${page}`,
-        {
-          headers: { "x-access-token": token },
-        }
-      )
-      .then((res) => {
-        setusers(res.data.data);
-        const plength = res.data.pages;
-        let pArr = [];
-        for (let i = 0; i < plength; i++) {
-          pArr.push(i + 1);
-        }
-        setpages(pArr);
-        setcurPage(page);
-      })
-      .catch((err) => {
-        alert("Error when fetching data.");
-      });
+    if (page >= 0 && page < pages.length) {
+      const token = sessionStorage.getItem("token");
+      await axios
+        .get(
+          `http://localhost:8070/users?keyword=${keyword}&limit=${limit}&page=${page}`,
+          {
+            headers: { "x-access-token": token },
+          }
+        )
+        .then((res) => {
+          setusers(res.data.data);
+          const plength = res.data.pages;
+          let pArr = [];
+          for (let i = 0; i < plength; i++) {
+            pArr.push(i + 1);
+          }
+          setpages(pArr);
+          setcurPage(page);
+        })
+        .catch((err) => {
+          alert("Error when fetching data.");
+        });
+    }
   };
 
   useEffect(() => {
-    if (user) {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!(user === "" || user === undefined || user == null)) {
       if (user.accountType === "admin") {
         setloggedUser(user);
         getUsers("", 5, 0);

@@ -4,7 +4,7 @@ import styles from "../styles/common.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function UpdateInfo({ user }) {
+function UpdateInfo() {
   const navigate = useNavigate();
   const [id, setid] = useState("");
   const [firstName, setfirstName] = useState("");
@@ -44,7 +44,8 @@ function UpdateInfo({ user }) {
   };
 
   useEffect(() => {
-    if (user) {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!(user === "" || user === undefined || user == null)) {
       setemail(user.email);
       setid(user.id);
     } else {

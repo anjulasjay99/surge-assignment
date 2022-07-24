@@ -20,9 +20,9 @@ import CreateNote from "./modals/CreateNote";
 import { FaUserEdit } from "react-icons/fa";
 import EditNote from "./modals/EditNote";
 
-function Notes({ setUser, user }) {
+function Notes() {
   const navigate = useNavigate();
-  const [loggedUser, setloggedUser] = useState("");
+  const [user, setuser] = useState({});
   const [viewNote, setviewNote] = useState(false);
   const [createNote, setcreateNote] = useState(false);
   const [editNote, seteditNote] = useState(false);
@@ -60,7 +60,6 @@ function Notes({ setUser, user }) {
 
   //logout from account
   const logout = () => {
-    setUser(null);
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     navigate("/login");
@@ -113,10 +112,11 @@ function Notes({ setUser, user }) {
   };
 
   useEffect(() => {
-    if (user) {
-      if (user.accountType === "student") {
-        setloggedUser(user);
-        getNotes(user.id, 5, 0);
+    const usr = JSON.parse(sessionStorage.getItem("user"));
+    if (!(usr === "" || usr === undefined || usr == null)) {
+      if (usr.accountType === "student") {
+        setuser(usr);
+        getNotes(usr.id, 5, 0);
       } else {
         alert("You do not have permission to access this page.");
         navigate("/login");

@@ -8,30 +8,15 @@ import Users from "./components/Users";
 import Notes from "./components/Notes";
 
 function App() {
-  const [user, setuser] = useState(null);
-
-  useEffect(() => {
-    const usr = sessionStorage.getItem("user");
-  }, []);
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact path="/" element={<Login setUser={setuser} />} />
-        <Route path="/login" element={<Login setUser={setuser} />} />
-        <Route path="/update-info" element={<UpdateInfo user={user} />} />
-        <Route
-          path="/change-password"
-          element={<ChangePassowrd user={user} />}
-        />
-        <Route
-          path="/users"
-          element={<Users user={user} setUser={setuser} />}
-        />
-        <Route
-          path="/notes"
-          element={<Notes user={user} setUser={setuser} />}
-        />
+        <Route exact path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/update-info" element={<UpdateInfo />} />
+        <Route path="/change-password" element={<ChangePassowrd />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/notes" element={<Notes />} />
       </Routes>
     </BrowserRouter>
   );
