@@ -83,7 +83,7 @@ function ChangePassowrd({ user }) {
     <div className={styles.parentDiv}>
       <Form className={styles.form} onSubmit={(e) => submit(e)} inline>
         <h2 style={{ textAlign: "center", fontWeight: "bolder" }}>
-          Update Your Info
+          Change Password
         </h2>
         <br />
 

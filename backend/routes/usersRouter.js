@@ -80,7 +80,12 @@ router.route("/").post(async (req, res) => {
     //read request body
     const { email, password, accountType } = req.body;
 
-    if (checkEmail(email)) {
+    if (await checkEmail(email)) {
+      res.status(400).json({
+        status: "error",
+        msg: "An account with the same email already exists",
+      });
+    } else {
       let id = "";
       let success = false;
       //generating an unique user id
@@ -135,14 +140,9 @@ router.route("/").post(async (req, res) => {
           console.log(err);
           res.status(400).json({ status: "error", msg: err });
         });
-    } else {
-      res.status(400).json({ status: "error", msg: "Authentication failed" });
     }
   } else {
-    res.status(400).json({
-      status: "error",
-      msg: "An account with the same email already exists",
-    });
+    res.status(400).json({ status: "error", msg: "Authentication failed" });
   }
 });
 

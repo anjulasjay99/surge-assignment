@@ -16,3 +16,47 @@
 Button {
   width: 100%;
 }
+
+.horizontalCenterDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px 100px 50px 100px;
+}
+
+.title {
+  width: 100%;
+}
+
+.content {
+  width: 100%;
+}
+
+.contentHeader {
+  width: 100%;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.btnCreate {
+  width: 180px;
+  float: right;
+}
+
+.modalForm {
+  width: 100%;
+}
+
+.link {
+  color: blue;
+  float: right;
+}
+
+.link:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.header {
+  width: 100%;
+}

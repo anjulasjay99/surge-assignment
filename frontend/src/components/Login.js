@@ -41,6 +41,7 @@ function Login({ setUser }) {
           //set user and json web token sent from backend
           setUser(res.data.user);
           sessionStorage.setItem("token", res.data.token);
+          sessionStorage.setItem("user", res.data.user);
 
           //check if user logged for the first time
           if (res.data.user.status === false) {
@@ -48,7 +49,7 @@ function Login({ setUser }) {
           } else {
             //check the account type
             if (res.data.user.accountType === "admin") {
-              alert("admin?");
+              navigate("/users");
             } else {
               alert("student?");
             }
