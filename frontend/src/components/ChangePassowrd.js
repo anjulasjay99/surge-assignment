@@ -23,33 +23,39 @@ function ChangePassowrd({ user }) {
     if (curPassword !== "" && newPassword !== "" && rePassword !== "") {
       //check if the current password is correct
       if (password === curPassword) {
-        //check if new password and re-entered password match
-        if (newPassword === rePassword) {
-          //create user object
-          const user = {
-            ...data,
-            password: newPassword,
-          };
-          setloading(true);
-          //calll the endpoint to update user info
-          axios
-            .put("http://localhost:8070/users", user, {
-              headers: { "x-access-token": token },
-            })
-            .then((res) => {
-              setloading(false);
-              alert("Info updated successfully!");
-              //navigate to login
-              navigate("/login");
-            })
-            .catch((err) => {
-              setloading(false);
-              //display error
-              alert(err.response.data.msg);
-            });
+        //check if new password is the same as old password
+        if (newPassword !== curPassword) {
+          //check if new password and re-entered password match
+          if (newPassword === rePassword) {
+            //create user object
+            const user = {
+              ...data,
+              password: newPassword,
+            };
+            setloading(true);
+            //calll the endpoint to update user info
+            axios
+              .put("http://localhost:8070/users", user, {
+                headers: { "x-access-token": token },
+              })
+              .then((res) => {
+                setloading(false);
+                alert("Info updated successfully!");
+                //navigate to login
+                navigate("/login");
+              })
+              .catch((err) => {
+                setloading(false);
+                //display error
+                alert(err.response.data.msg);
+              });
+          } else {
+            //display error
+            alert("Password does not match");
+          }
         } else {
           //display error
-          alert("Password does not match");
+          alert("Please enter a new password");
         }
       } else {
         //display error

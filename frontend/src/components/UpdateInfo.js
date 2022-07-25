@@ -9,7 +9,7 @@ function UpdateInfo() {
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [dateOfBirth, setdateOfBirth] = useState("");
-  const [mobile, setmobile] = useState(0);
+  const [mobile, setmobile] = useState();
   const [email, setemail] = useState("");
 
   //called when user submits the form
@@ -66,6 +66,7 @@ function UpdateInfo() {
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setfirstName(e.target.value)}
+            title="first name"
           />
         </FormGroup>
         <FormGroup>
@@ -75,6 +76,7 @@ function UpdateInfo() {
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setlastName(e.target.value)}
+            title="last name"
           />
         </FormGroup>
         <FormGroup>
@@ -84,6 +86,8 @@ function UpdateInfo() {
             placeholder="Email"
             value={email}
             onChange={(e) => setemail(e.target.value)}
+            title="email"
+            disabled
           />
         </FormGroup>
         <FormGroup>
@@ -93,6 +97,7 @@ function UpdateInfo() {
             placeholder="Date of birth"
             value={dateOfBirth}
             onChange={(e) => setdateOfBirth(e.target.value)}
+            title="date of birth"
           />
         </FormGroup>
         <FormGroup>
@@ -102,6 +107,7 @@ function UpdateInfo() {
             placeholder="Mobile No."
             value={mobile}
             onChange={(e) => setmobile(e.target.value)}
+            title="mobile number"
           />
         </FormGroup>
         <Button type="submit" color="primary">
