@@ -17,7 +17,7 @@ connection.once("open", () => {
 
 //create password hash
 const salt = bcrypt.genSaltSync(10);
-const hash = bcrypt.hashSync("pass", salt);
+const hash = bcrypt.hashSync("password", salt);
 
 //create admin object
 const admin = new User({
