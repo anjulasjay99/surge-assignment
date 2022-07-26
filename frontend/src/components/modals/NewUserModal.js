@@ -59,6 +59,7 @@ function NewUserModal({ isOpen, toggle, getUsers }) {
               .then((res) => {
                 alert(res.data.msg);
                 setloading(false);
+                setDefaultValues();
                 getUsers("", 5, 0);
                 toggle();
               })
@@ -87,6 +88,20 @@ function NewUserModal({ isOpen, toggle, getUsers }) {
     } else {
       alert("Please fill all the details.");
     }
+  };
+
+  //set form default values
+  const setDefaultValues = () => {
+    setemail("");
+    setpassword("");
+    setconfirmPassword("");
+    setaccountType("admin");
+    setinvalidEmail(false);
+    setemailFeedback("");
+    setinvalidPassword(false);
+    setpasswordFeedback("");
+    setinvalidConfPassword(false);
+    setconfPasswordFeedback("");
   };
 
   return (
