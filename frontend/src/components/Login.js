@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import {
   Form,
   FormGroup,
+  InputGroupText,
   Input,
+  InputGroup,
   Button,
   FormFeedback,
   Spinner,
 } from "reactstrap";
 import styles from "../styles/common.module.css";
 import { useNavigate } from "react-router-dom";
+import { FaUserAlt, FaKey } from "react-icons/fa";
 import axios from "axios";
 
 function Login() {
@@ -75,35 +78,46 @@ function Login() {
   return (
     <div className={styles.parentDiv}>
       <Form className={styles.form} onSubmit={(e) => login(e)} inline>
-        <h2 style={{ textAlign: "center", fontWeight: "bolder" }}>LOGIN</h2>
+        <h2 style={{ textAlign: "center", fontWeight: "bolder" }}>Log In</h2>
         <br />
         <FormGroup>
-          <Input
-            id="email"
-            name="email"
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setemail(e.target.value)}
-            invalid={error}
-          />
+          <InputGroup>
+            <InputGroupText>
+              <FaUserAlt />
+            </InputGroupText>
+            <Input
+              id="email"
+              name="email"
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setemail(e.target.value)}
+              invalid={error}
+            />
+          </InputGroup>
         </FormGroup>
         <FormGroup>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setpassword(e.target.value)}
-            invalid={error}
-          />
+          <InputGroup>
+            <InputGroupText>
+              <FaKey />
+            </InputGroupText>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setpassword(e.target.value)}
+              invalid={error}
+            />
+          </InputGroup>
+
           <FormFeedback invalid>{feedback}</FormFeedback>
         </FormGroup>
 
         <Button type="submit" color="primary">
           <Spinner size="sm" hidden={!loading}></Spinner>
-          Login
+          Log In
         </Button>
       </Form>
     </div>

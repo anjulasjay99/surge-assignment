@@ -187,34 +187,38 @@ function Notes() {
             </tr>
           </thead>
           <tbody>
-            {notes.map((note, index) => {
-              return (
-                <tr key={note._id}>
-                  <th scope="row">{curPage * 5 + (index + 1)}</th>
-                  <td>{note.title}</td>
-                  <td>{new Date(note.dateCreated).toLocaleString()}</td>
-                  <td>
-                    <GrView
-                      style={{ cursor: "pointer" }}
-                      title="View Note"
-                      onClick={() => viewSelectedNote(note)}
-                    />
-                    &nbsp; &nbsp;
-                    <FaUserEdit
-                      title="Edit Note"
-                      style={{ marginRight: "10px", cursor: "pointer" }}
-                      onClick={() => viewEditNote(note)}
-                    />
-                    &nbsp;
-                    <MdDeleteForever
-                      style={{ cursor: "pointer" }}
-                      title="Delete Note"
-                      onClick={() => deleteNote(note)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+            {notes.length > 0 ? (
+              notes.map((note, index) => {
+                return (
+                  <tr key={note._id}>
+                    <th scope="row">{curPage * 5 + (index + 1)}</th>
+                    <td>{note.title}</td>
+                    <td>{new Date(note.dateCreated).toLocaleString()}</td>
+                    <td>
+                      <GrView
+                        style={{ cursor: "pointer" }}
+                        title="View Note"
+                        onClick={() => viewSelectedNote(note)}
+                      />
+                      &nbsp; &nbsp;
+                      <FaUserEdit
+                        title="Edit Note"
+                        style={{ marginRight: "10px", cursor: "pointer" }}
+                        onClick={() => viewEditNote(note)}
+                      />
+                      &nbsp;
+                      <MdDeleteForever
+                        style={{ cursor: "pointer" }}
+                        title="Delete Note"
+                        onClick={() => deleteNote(note)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <label>No data to be displayed.</label>
+            )}
           </tbody>
         </Table>
       </div>

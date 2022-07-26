@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, FormGroup, Input, Button, Spinner } from "reactstrap";
+import { Form, FormGroup, Input, Button, Spinner, FormText } from "reactstrap";
 import styles from "../styles/common.module.css";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -25,33 +25,38 @@ function ChangePassowrd({ user }) {
       if (password === curPassword) {
         //check if new password is the same as old password
         if (newPassword !== curPassword) {
-          //check if new password and re-entered password match
-          if (newPassword === rePassword) {
-            //create user object
-            const user = {
-              ...data,
-              password: newPassword,
-            };
-            setloading(true);
-            //calll the endpoint to update user info
-            axios
-              .put("http://localhost:8070/users", user, {
-                headers: { "x-access-token": token },
-              })
-              .then((res) => {
-                setloading(false);
-                alert("Info updated successfully!");
-                //navigate to login
-                navigate("/login");
-              })
-              .catch((err) => {
-                setloading(false);
-                //display error
-                alert(err.response.data.msg);
-              });
+          //check if new password contains at least 8 characters
+          if (newPassword.length >= 8) {
+            //check if new password and re-entered password match
+            if (newPassword === rePassword) {
+              //create user object
+              const user = {
+                ...data,
+                password: newPassword,
+              };
+              setloading(true);
+              //calll the endpoint to update user info
+              axios
+                .put("http://localhost:8070/users", user, {
+                  headers: { "x-access-token": token },
+                })
+                .then((res) => {
+                  setloading(false);
+                  alert("Info updated successfully!");
+                  //navigate to login
+                  navigate("/login");
+                })
+                .catch((err) => {
+                  setloading(false);
+                  //display error
+                  alert(err.response.data.msg);
+                });
+            } else {
+              //display error
+              alert("Password does not match");
+            }
           } else {
-            //display error
-            alert("Password does not match");
+            alert("Password must contain at least 8 characters");
           }
         } else {
           //display error
@@ -93,7 +98,6 @@ function ChangePassowrd({ user }) {
           Change Password
         </h2>
         <br />
-
         <FormGroup>
           <Input
             type="password"
@@ -111,6 +115,7 @@ function ChangePassowrd({ user }) {
             value={newPassword}
             onChange={(e) => setnewPassword(e.target.value)}
           />
+          <FormText>Password must contain at least 8 characters</FormText>
         </FormGroup>
         <FormGroup>
           <Input

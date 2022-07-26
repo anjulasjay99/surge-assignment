@@ -152,27 +152,31 @@ function Users() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => {
-              return (
-                <tr key={user.id}>
-                  <th scope="row">{curPage * 5 + (index + 1)}</th>
-                  <td>{user.id}</td>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>{user.email}</td>
-                  <td>{user.dateOfBirth}</td>
-                  <td>{user.mobile}</td>
-                  <td>{user.accountType}</td>
-                  <td>
-                    <GrView
-                      style={{ cursor: "pointer" }}
-                      title="View Details"
-                      onClick={() => setUsr(user)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+            {users.length > 0 ? (
+              users.map((user, index) => {
+                return (
+                  <tr key={user.id}>
+                    <th scope="row">{curPage * 5 + (index + 1)}</th>
+                    <td>{user.id}</td>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.email}</td>
+                    <td>{user.dateOfBirth}</td>
+                    <td>{user.mobile}</td>
+                    <td>{user.accountType}</td>
+                    <td>
+                      <GrView
+                        style={{ cursor: "pointer" }}
+                        title="View Details"
+                        onClick={() => setUsr(user)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <label>No data to be displayed.</label>
+            )}
           </tbody>
         </Table>
       </div>

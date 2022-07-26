@@ -10,6 +10,7 @@ import {
   ModalFooter,
   Spinner,
   Label,
+  FormText,
 } from "reactstrap";
 import styles from "../../styles/common.module.css";
 import axios from "axios";
@@ -19,30 +20,42 @@ function NewUserModal({ isOpen, toggle, getUsers }) {
   const [password, setpassword] = useState("");
   const [accountType, setaccountType] = useState("admin");
   const [loading, setloading] = useState(false);
+  const [confirmPassword, setconfirmPassword] = useState("");
 
   const create = async (e) => {
     e.preventDefault();
 
     if (email !== "" && password !== "") {
-      const mailformat = /^\S+@\S+\.\S+$/;
+      const mailformat = /^\S+@\S+\.\S+$/; //email format to check validity of the email
+      //check if entered email is valid
       if (email.match(mailformat)) {
-        const token = sessionStorage.getItem("token");
-        const user = { email, password, accountType };
-        setloading(true);
-        await axios
-          .post("http://localhost:8070/users", user, {
-            headers: { "x-access-token": token },
-          })
-          .then((res) => {
-            alert(res.data.msg);
-            setloading(false);
-            getUsers("", 5, 0);
-            toggle();
-          })
-          .catch((err) => {
-            setloading(false);
-            alert(err.response.data.msg);
-          });
+        //check if password contains at least 8 characters
+        if (password.length >= 8) {
+          //check if passwords match
+          if (password === confirmPassword) {
+            const token = sessionStorage.getItem("token");
+            const user = { email, password, accountType };
+            setloading(true);
+            await axios
+              .post("http://localhost:8070/users", user, {
+                headers: { "x-access-token": token },
+              })
+              .then((res) => {
+                alert(res.data.msg);
+                setloading(false);
+                getUsers("", 5, 0);
+                toggle();
+              })
+              .catch((err) => {
+                setloading(false);
+                alert(err.response.data.msg);
+              });
+          } else {
+            alert("Passwords do not match.");
+          }
+        } else {
+          alert("Password must contain at least 8 characters");
+        }
       } else {
         alert("Invalid email address.");
       }
@@ -77,22 +90,33 @@ function NewUserModal({ isOpen, toggle, getUsers }) {
               value={password}
               onChange={(e) => setpassword(e.target.value)}
             />
+            <FormText>Password must contain at least 8 characters</FormText>
+          </FormGroup>
+          <FormGroup>
+            <Label for="confpassword">Confirm Password</Label>
+            <Input
+              id="confpassword"
+              name="confpassword"
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setconfirmPassword(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="accountType">Account Type</Label>
+            <Input
+              id="accountType"
+              name="accountType"
+              type="select"
+              value={accountType}
+              onChange={(e) => setaccountType(e.target.value)}
+            >
+              <option value="admin">Admin</option>
+              <option value="student">Student</option>
+            </Input>
           </FormGroup>
         </Form>
-
-        <FormGroup>
-          <Label for="accountType">Account Type</Label>
-          <Input
-            id="accountType"
-            name="accountType"
-            type="select"
-            value={accountType}
-            onChange={(e) => setaccountType(e.target.value)}
-          >
-            <option value="admin">Admin</option>
-            <option value="student">Student</option>
-          </Input>
-        </FormGroup>
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={create}>
