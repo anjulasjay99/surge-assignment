@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, FormGroup, Input, Button } from "reactstrap";
+import { Form, FormGroup, Input, Button, Label } from "reactstrap";
 import styles from "../styles/common.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -60,6 +60,7 @@ function UpdateInfo() {
         </h2>
         <br />
         <FormGroup>
+          <Label for="firstName">First Name</Label>
           <Input
             type="text"
             id="firstName"
@@ -70,6 +71,7 @@ function UpdateInfo() {
           />
         </FormGroup>
         <FormGroup>
+          <Label for="lastName">Last Name</Label>
           <Input
             type="text"
             id="lastName"
@@ -80,6 +82,7 @@ function UpdateInfo() {
           />
         </FormGroup>
         <FormGroup>
+          <Label for="email">Email</Label>
           <Input
             type="email"
             id="email"
@@ -90,6 +93,7 @@ function UpdateInfo() {
             disabled
           />
         </FormGroup>
+        <Label for="dateOfBirth">Date Of Birth</Label>
         <FormGroup>
           <Input
             type="date"
@@ -100,6 +104,7 @@ function UpdateInfo() {
             title="date of birth"
           />
         </FormGroup>
+        <Label for="mobile">Mobile</Label>
         <FormGroup>
           <Input
             type="tel"

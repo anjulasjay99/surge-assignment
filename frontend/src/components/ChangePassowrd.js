@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Form, FormGroup, Input, Button, Spinner, FormText } from "reactstrap";
+import {
+  Form,
+  FormGroup,
+  Input,
+  Button,
+  Spinner,
+  FormText,
+  Label,
+  FormFeedback,
+} from "reactstrap";
 import styles from "../styles/common.module.css";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -14,6 +23,12 @@ function ChangePassowrd({ user }) {
   const [data, setdata] = useState("");
   const [token, settoken] = useState("");
   const [loading, setloading] = useState(false);
+  const [curPasswordFeedback, setcurPasswordFeedback] = useState("");
+  const [invalidCurPassword, setinvalidCurPassword] = useState(false);
+  const [invalidPassword, setinvalidPassword] = useState(false);
+  const [passwordFeedback, setpasswordFeedback] = useState("");
+  const [invalidConfPassword, setinvalidConfPassword] = useState(false);
+  const [confPasswordFeedback, setconfPasswordFeedback] = useState("");
 
   //update user info
   const submit = (e) => {
@@ -23,12 +38,20 @@ function ChangePassowrd({ user }) {
     if (curPassword !== "" && newPassword !== "" && rePassword !== "") {
       //check if the current password is correct
       if (password === curPassword) {
+        setinvalidCurPassword(false);
+        setcurPasswordFeedback("");
         //check if new password is the same as old password
         if (newPassword !== curPassword) {
+          setinvalidPassword(false);
+          setpasswordFeedback("");
           //check if new password contains at least 8 characters
           if (newPassword.length >= 8) {
+            setinvalidPassword(false);
+            setpasswordFeedback("");
             //check if new password and re-entered password match
             if (newPassword === rePassword) {
+              setinvalidConfPassword(false);
+              setconfPasswordFeedback("");
               //create user object
               const user = {
                 ...data,
@@ -53,18 +76,26 @@ function ChangePassowrd({ user }) {
                 });
             } else {
               //display error
-              alert("Password does not match");
+              setinvalidConfPassword(true);
+              setconfPasswordFeedback("Password does not match");
             }
           } else {
-            alert("Password must contain at least 8 characters");
+            setinvalidPassword(true);
+            setinvalidConfPassword(false);
+            setpasswordFeedback("Password must contain at least 8 characters");
           }
         } else {
           //display error
-          alert("Please enter a new password");
+          setinvalidPassword(true);
+          setinvalidConfPassword(false);
+          setpasswordFeedback("You can not use the old password");
         }
       } else {
         //display error
-        alert("Current password is incorrect");
+        setinvalidCurPassword(true);
+        setinvalidPassword(false);
+        setinvalidConfPassword(false);
+        setcurPasswordFeedback("Incorrect password");
       }
     } else {
       //display error
@@ -99,32 +130,43 @@ function ChangePassowrd({ user }) {
         </h2>
         <br />
         <FormGroup>
+          <Label for="curPassword">Current Password</Label>
           <Input
             type="password"
             id="curPassword"
             placeholder="Current Password"
             value={curPassword}
             onChange={(e) => setcurPassword(e.target.value)}
+            invalid={invalidCurPassword}
           />
+          <FormFeedback invalid>{curPasswordFeedback}</FormFeedback>
         </FormGroup>
         <FormGroup>
+          <Label for="newPassword">New Password</Label>
           <Input
             type="password"
             id="newPassword"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setnewPassword(e.target.value)}
+            invalid={invalidPassword}
           />
-          <FormText>Password must contain at least 8 characters</FormText>
+          <FormFeedback invalid>{passwordFeedback}</FormFeedback>
+          <FormText hidden={invalidPassword}>
+            Password must contain at least 8 characters
+          </FormText>
         </FormGroup>
         <FormGroup>
+          <Label for="rePassword">Confirm New Password</Label>
           <Input
             type="password"
             id="rePassword"
             placeholder="Confirm New Password"
             value={rePassword}
             onChange={(e) => setrePassword(e.target.value)}
+            invalid={invalidConfPassword}
           />
+          <FormFeedback invalid>{confPasswordFeedback}</FormFeedback>
         </FormGroup>
         <Button type="submit" color="primary">
           <Spinner size="sm" hidden={!loading}></Spinner>
