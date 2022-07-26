@@ -110,6 +110,7 @@ function Users() {
   return (
     <div className={styles.horizontalCenterDiv}>
       <div className={styles.header}>
+        <label>Welcome, {loggedUser.firstName}</label>
         <label className={styles.link} onClick={logout}>
           Logout
         </label>

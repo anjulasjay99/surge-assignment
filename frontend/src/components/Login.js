@@ -110,9 +110,8 @@ function Login() {
               onChange={(e) => setpassword(e.target.value)}
               invalid={error}
             />
+            <FormFeedback invalid>{feedback}</FormFeedback>
           </InputGroup>
-
-          <FormFeedback invalid>{feedback}</FormFeedback>
         </FormGroup>
 
         <Button type="submit" color="primary">
